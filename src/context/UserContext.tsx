@@ -22,7 +22,29 @@ const UserContext = ({ children }: types.IProps) => {
       data: null,
       id: null,
     },
+    pageCount: 0,
+    allUsers: [],
   });
+
+  const fetchAllData = useCallback(async () => {
+    const response = await axios.get(`http://localhost:4000/users`);
+    console.log(response);
+    const dataNumbers = response.data.length;
+    const pageNumbers = Math.ceil(dataNumbers / 4);
+    setState((prevState) => ({
+      ...prevState,
+      allUsers: response.data,
+      pageCount: pageNumbers,
+    }));
+  }, []);
+
+ 
+
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
+
+  console.log(state.users);
 
   const handleClickOpen = (): void => {
     setState((prevState) => ({
@@ -64,12 +86,22 @@ const UserContext = ({ children }: types.IProps) => {
   }, [state.pageNo]);
 
   useEffect(() => {
+    if (state.users.length === 0 && state.pageNo > 1) {
+      setState((prevState) => ({
+        ...prevState,
+        pageNo: prevState.pageNo - 1,
+      }));
+    }
+  }, [state.users, state.pageNo]);
+
+  useEffect(() => {
     fetchData();
   }, [fetchData]);
 
   const addNewUser = async (data: types.IAddUser) => {
     const response = await axios.post("http://localhost:4000/users", data);
     fetchData();
+    fetchAllData();
     setState((prevState) => ({
       ...prevState,
       isOpenModal: false,
@@ -79,6 +111,7 @@ const UserContext = ({ children }: types.IProps) => {
   const handleDeleteUser = async (id: number) => {
     await axios.delete(`http://localhost:4000/users/${id}`);
     fetchData();
+    fetchAllData();
   };
 
   const handleEditUser = async (id: number) => {
@@ -105,18 +138,18 @@ const UserContext = ({ children }: types.IProps) => {
     }));
   };
 
-
   const EditUser = async (data: types.IAddUser) => {
     const response = await axios.put(
       `http://localhost:4000/users/${state.edit.id}`,
       data
     );
     console.log(response);
-    if(response.statusText=== "OK"){
-      fetchData()
+    if (response.statusText === "OK") {
+      fetchData();
+
       setState((prevState) => ({
         ...prevState,
-        isOpenModal:false
+        isOpenModal: false,
       }));
     }
   };

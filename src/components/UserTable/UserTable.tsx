@@ -20,7 +20,8 @@ export default function BasicTable() {
     loading,
     pageNo,
     handleDeleteUser,
-    handleEditUser
+    handleEditUser,
+    pageCount
   } = useConsumeContext();
   console.log(users);
 
@@ -69,7 +70,7 @@ export default function BasicTable() {
           <Pagination
             showFirstButton
             showLastButton
-            count={10}
+            count={pageCount}
             page={pageNo}
             color="primary"
             onChange={handlePageChange}
