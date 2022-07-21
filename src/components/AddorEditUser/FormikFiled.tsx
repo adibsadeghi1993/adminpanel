@@ -1,9 +1,9 @@
 import React from "react";
 import { Field, FormikProps, ErrorMessage } from "formik";
-import { IInitialValues } from "./AddOrEditUser";
 import { TextField } from "@mui/material";
+import type * as types from "./types";
 
-interface IProps extends FormikProps<IInitialValues> {
+interface IProps extends FormikProps<types.IInitialValues> {
   name: string;
   label: string;
 }
@@ -11,8 +11,9 @@ interface IProps extends FormikProps<IInitialValues> {
 const FormikFiled = ({ name, label, errors, submitCount }: IProps) => {
   return (
     <Field
-      error={!!submitCount && errors[name as keyof IInitialValues]}
+      error={!!submitCount && errors[name as keyof types.IInitialValues]}
       name={name}
+      fullWidth
       label={label}
       as={TextField}
       helperText={!!submitCount && <ErrorMessage name={name} />}

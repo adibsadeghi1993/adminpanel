@@ -1,11 +1,20 @@
-import AddOrEditUser from "./components/AddorEditUser/AddOrEditUser";
 
+import UserContext from "./context/UserContext"
+import BasicTable from "./components/UserTable/UserTable"
+import {Container} from "@mui/material"
+import Modal from "./components/Modal"
 
 function App() {
-  return <div className="App">
-    <h1>project</h1>
-    <AddOrEditUser/>
-  </div>;
+  return (
+    <Container maxWidth="lg">
+  
+    <UserContext>
+      <Modal/>
+      <BasicTable/>
+    </UserContext>
+
+  </Container>
+  )
 }
 
 export default App;
