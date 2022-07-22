@@ -36,7 +36,7 @@ function Modal() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {loading?"loading":<AddOrEditUser />}
+           {mode==="edit" && loading ?"loading":<AddOrEditUser />}
           </DialogContentText>
         </DialogContent>
         <DialogActions>

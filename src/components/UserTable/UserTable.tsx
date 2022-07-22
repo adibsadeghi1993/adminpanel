@@ -8,7 +8,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Box, Button } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import { useConsumeContext } from "../../context/UserContext";
 import type * as types from "../../context/types";
 
@@ -19,9 +19,11 @@ export default function BasicTable() {
     handlePageChange,
     loading,
     pageNo,
-    handleDeleteUser,
     handleEditUser,
-    pageCount
+    handleDeleteUser,
+    pageCount,
+    text,
+    handelTextChange,
   } = useConsumeContext();
   console.log(users);
 
@@ -30,11 +32,28 @@ export default function BasicTable() {
   }
   return (
     <Box>
-      <Box sx={{ my: "50px" }}>
-        <Button onClick={handleClickOpen} variant="outlined">
-          add new user
-        </Button>
+      <Box>
+        <Box
+          sx={{
+            my: "20px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Box>
+            <TextField
+              value={text}
+              label="search"
+              onChange={handelTextChange}
+            />
+          </Box>
+          <Button onClick={handleClickOpen} variant="outlined">
+            add new user
+          </Button>
+        </Box>
       </Box>
+
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -55,8 +74,18 @@ export default function BasicTable() {
                   <TableCell align="right">{u.position}</TableCell>
                   <TableCell align="right">{u.gender}</TableCell>
                   <TableCell align="right">
-                    <Button onClick={() => handleEditUser(u.id)}>edit</Button>
-                    <Button onClick={() => handleDeleteUser(u.id)}>
+                    <Button
+                      onClick={() => handleEditUser(u.id)}
+                      sx={{ mr: "10px" }}
+                      variant="outlined"
+                    >
+                      edit
+                    </Button>
+                    <Button
+                      onClick={() => handleDeleteUser(u.id)}
+                      variant="outlined"
+                      color="error"
+                    >
                       delete
                     </Button>
                   </TableCell>

@@ -6,7 +6,11 @@ import React, {
   useEffect,
 } from "react";
 import type * as types from "./types";
+
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import { TryRounded } from "@mui/icons-material";
 
 const userContext = createContext({} as types.IContextValues);
 
@@ -22,29 +26,25 @@ const UserContext = ({ children }: types.IProps) => {
       data: null,
       id: null,
     },
-    pageCount: 0,
-    allUsers: [],
+   pageCount:0
   });
 
-  const fetchAllData = useCallback(async () => {
-    const response = await axios.get(`http://localhost:4000/users`);
-    console.log(response);
-    const dataNumbers = response.data.length;
-    const pageNumbers = Math.ceil(dataNumbers / 4);
+
+  const fetchAllUsers=useCallback(async()=>{
+    const response=await axios.get("http://localhost:4000/users")
+    const usersCount=response.data.length
+    const pageCount=Math.ceil(usersCount/4)
     setState((prevState) => ({
       ...prevState,
-      allUsers: response.data,
-      pageCount: pageNumbers,
+      pageCount,
     }));
-  }, []);
+  },[])
+
+  useEffect(()=>{
+    fetchAllUsers()
+  },[])
 
  
-
-  useEffect(() => {
-    fetchAllData();
-  }, [fetchAllData]);
-
-  console.log(state.users);
 
   const handleClickOpen = (): void => {
     setState((prevState) => ({
@@ -74,10 +74,13 @@ const UserContext = ({ children }: types.IProps) => {
       ...prevState,
       loading: true,
     }));
+
     const response = await axios.get(
-      `http://localhost:4000/users?_page=${state.pageNo}&_limit=4`
+      `http://localhost:4000/users?&_page=${state.pageNo}&_limit=4`
     );
+
     console.log(response);
+
     setState((prevState) => ({
       ...prevState,
       users: response.data,
@@ -86,73 +89,77 @@ const UserContext = ({ children }: types.IProps) => {
   }, [state.pageNo]);
 
   useEffect(() => {
-    if (state.users.length === 0 && state.pageNo > 1) {
-      setState((prevState) => ({
-        ...prevState,
-        pageNo: prevState.pageNo - 1,
-      }));
-    }
-  }, [state.users, state.pageNo]);
-
-  useEffect(() => {
     fetchData();
   }, [fetchData]);
 
   const addNewUser = async (data: types.IAddUser) => {
     const response = await axios.post("http://localhost:4000/users", data);
-    fetchData();
-    fetchAllData();
-    setState((prevState) => ({
-      ...prevState,
-      isOpenModal: false,
-    }));
-  };
-
-  const handleDeleteUser = async (id: number) => {
-    await axios.delete(`http://localhost:4000/users/${id}`);
-    fetchData();
-    fetchAllData();
+    console.log(response);
+    if (response.status === 201) {
+      setState((prevState) => ({
+        ...prevState,
+        isOpenModal: false,
+      }));
+      fetchData();
+      fetchAllUsers()
+      
+    }
   };
 
   const handleEditUser = async (id: number) => {
     setState((prevState) => ({
       ...prevState,
       isOpenModal: true,
-      loading: true,
       mode: "edit",
-      edit: {
-        ...prevState.edit,
-        id: id,
-      },
+      loading: true,
     }));
 
     const response = await axios.get(`http://localhost:4000/users/${id}`);
-
     setState((prevState) => ({
       ...prevState,
-      loading: false,
       edit: {
-        ...prevState.edit,
         data: response.data,
+        id: id,
       },
+      loading: false,
     }));
   };
 
-  const EditUser = async (data: types.IAddUser) => {
+  const editUser = async (data: types.IAddUser) => {
     const response = await axios.put(
       `http://localhost:4000/users/${state.edit.id}`,
       data
     );
-    console.log(response);
-    if (response.statusText === "OK") {
-      fetchData();
+    setState((prevState) => ({
+      ...prevState,
+     isOpenModal:false
+    }));
+    fetchData()
 
+  };
+
+
+  const handleDeleteUser=async(id:number)=>{
+    await axios.delete(`http://localhost:4000/users/${id}`)
+    fetchData()
+    fetchAllUsers()
+
+    if(state.users.length===1){
       setState((prevState) => ({
         ...prevState,
-        isOpenModal: false,
+       pageNo:prevState.pageNo-1
       }));
     }
-  };
+   
+
+  }
+
+  const handelTextChange=(e:React.ChangeEvent<HTMLInputElement>)=>{
+    setState((prevState) => ({
+      ...prevState,
+     text:e.target.value
+    }));
+  }
 
   const values: types.IContextValues = {
     ...state,
@@ -160,9 +167,10 @@ const UserContext = ({ children }: types.IProps) => {
     handleClose,
     handlePageChange,
     addNewUser,
-    handleDeleteUser,
     handleEditUser,
-    EditUser,
+    editUser,
+    handleDeleteUser,
+    handelTextChange
   };
 
   return <userContext.Provider value={values}>{children}</userContext.Provider>;
