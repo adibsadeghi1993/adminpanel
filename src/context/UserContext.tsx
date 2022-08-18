@@ -29,29 +29,28 @@ const UserContext = ({ children }: types.IProps) => {
     pageCount: 0,
   });
 
-  const filterUser=()=>{
-    
-  }
+  const filterUser = () => {};
 
   const fetchAllUsers = useCallback(async () => {
-   if(state.text.length>=3){
-     
-    const response = await axios.get(`http://localhost:4000/users?q=${state.text}`);
-    const usersCount = response.data.length;
-    const pageCount = Math.ceil(usersCount / 4);
-    setState((prevState) => ({
-      ...prevState,
-      pageCount,
-    }));
-   }else{
-    const response = await axios.get(`http://localhost:4000/users`);
-    const usersCount = response.data.length;
-    const pageCount = Math.ceil(usersCount / 4);
-    setState((prevState) => ({
-      ...prevState,
-      pageCount,
-    })); 
-   }
+    if (state.text.length >= 3) {
+      const response = await axios.get(
+        `http://localhost:4000/users?q=${state.text}`
+      );
+      const usersCount = response.data.length;
+      const pageCount = Math.ceil(usersCount / 4);
+      setState((prevState) => ({
+        ...prevState,
+        pageCount,
+      }));
+    } else {
+      const response = await axios.get(`http://localhost:4000/users`);
+      const usersCount = response.data.length;
+      const pageCount = Math.ceil(usersCount / 4);
+      setState((prevState) => ({
+        ...prevState,
+        pageCount,
+      }));
+    }
   }, [state.text]);
 
   useEffect(() => {
@@ -87,32 +86,39 @@ const UserContext = ({ children }: types.IProps) => {
       loading: true,
     }));
 
-   if(state.text.length>=3){
-    const response = await axios.get(
-      `http://localhost:4000/users?q=${state.text}&_page=${state.pageNo}&_limit=4`
-    );
+    if (state.text.length >= 3) {
+      setState((prevState) => ({
+        ...prevState,
+        loading: true,
+      }));
+      const response = await axios.get(
+        `http://localhost:4000/users?q=${state.text}&_page=${state.pageNo}&_limit=4`
+      );
 
-    console.log(response);
+      console.log(response);
 
-    setState((prevState) => ({
-      ...prevState,
-      users: response.data,
-      loading: false,
-    }));
-   }else{
-    const response = await axios.get(
-      `http://localhost:4000/users?&_page=${state.pageNo}&_limit=4`
-    );
+      setState((prevState) => ({
+        ...prevState,
+        users: response.data,
+        loading: false,
+      }));
+    } else {
+      const response = await axios.get(
+        `http://localhost:4000/users?&_page=${state.pageNo}&_limit=4`
+      );
 
-    console.log(response);
+      console.log(response);
 
-    setState((prevState) => ({
-      ...prevState,
-      users: response.data,
-      loading: false,
-    }));
-   }
-  }, [state.pageNo,state.text]);
+      setState((prevState) => ({
+        ...prevState,
+        users: response.data,
+        loading: false,
+      }));
+    }
+  }, [state.pageNo, state.text]);
+
+
+  
 
   useEffect(() => {
     fetchData();
