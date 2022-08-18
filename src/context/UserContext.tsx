@@ -29,7 +29,6 @@ const UserContext = ({ children }: types.IProps) => {
     pageCount: 0,
   });
 
-  const filterUser = () => {};
 
   const fetchAllUsers = useCallback(async () => {
     if (state.text.length >= 3) {
