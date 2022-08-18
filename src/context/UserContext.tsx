@@ -26,25 +26,37 @@ const UserContext = ({ children }: types.IProps) => {
       data: null,
       id: null,
     },
-   pageCount:0
+    pageCount: 0,
   });
 
+  const filterUser=()=>{
+    
+  }
 
-  const fetchAllUsers=useCallback(async()=>{
-    const response=await axios.get("http://localhost:4000/users")
-    const usersCount=response.data.length
-    const pageCount=Math.ceil(usersCount/4)
+  const fetchAllUsers = useCallback(async () => {
+   if(state.text.length>=3){
+     
+    const response = await axios.get(`http://localhost:4000/users?q=${state.text}`);
+    const usersCount = response.data.length;
+    const pageCount = Math.ceil(usersCount / 4);
     setState((prevState) => ({
       ...prevState,
       pageCount,
     }));
-  },[])
+   }else{
+    const response = await axios.get(`http://localhost:4000/users`);
+    const usersCount = response.data.length;
+    const pageCount = Math.ceil(usersCount / 4);
+    setState((prevState) => ({
+      ...prevState,
+      pageCount,
+    })); 
+   }
+  }, [state.text]);
 
-  useEffect(()=>{
-    fetchAllUsers()
-  },[])
-
- 
+  useEffect(() => {
+    fetchAllUsers();
+  }, [fetchAllUsers]);
 
   const handleClickOpen = (): void => {
     setState((prevState) => ({
@@ -75,6 +87,19 @@ const UserContext = ({ children }: types.IProps) => {
       loading: true,
     }));
 
+   if(state.text.length>=3){
+    const response = await axios.get(
+      `http://localhost:4000/users?q=${state.text}&_page=${state.pageNo}&_limit=4`
+    );
+
+    console.log(response);
+
+    setState((prevState) => ({
+      ...prevState,
+      users: response.data,
+      loading: false,
+    }));
+   }else{
     const response = await axios.get(
       `http://localhost:4000/users?&_page=${state.pageNo}&_limit=4`
     );
@@ -86,7 +111,8 @@ const UserContext = ({ children }: types.IProps) => {
       users: response.data,
       loading: false,
     }));
-  }, [state.pageNo]);
+   }
+  }, [state.pageNo,state.text]);
 
   useEffect(() => {
     fetchData();
@@ -101,8 +127,7 @@ const UserContext = ({ children }: types.IProps) => {
         isOpenModal: false,
       }));
       fetchData();
-      fetchAllUsers()
-      
+      fetchAllUsers();
     }
   };
 
@@ -132,34 +157,30 @@ const UserContext = ({ children }: types.IProps) => {
     );
     setState((prevState) => ({
       ...prevState,
-     isOpenModal:false
+      isOpenModal: false,
     }));
-    fetchData()
-
+    fetchData();
   };
 
+  const handleDeleteUser = async (id: number) => {
+    await axios.delete(`http://localhost:4000/users/${id}`);
+    fetchData();
+    fetchAllUsers();
 
-  const handleDeleteUser=async(id:number)=>{
-    await axios.delete(`http://localhost:4000/users/${id}`)
-    fetchData()
-    fetchAllUsers()
-
-    if(state.users.length===1){
+    if (state.users.length === 1) {
       setState((prevState) => ({
         ...prevState,
-       pageNo:prevState.pageNo-1
+        pageNo: prevState.pageNo - 1,
       }));
     }
-   
+  };
 
-  }
-
-  const handelTextChange=(e:React.ChangeEvent<HTMLInputElement>)=>{
+  const handelTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setState((prevState) => ({
       ...prevState,
-     text:e.target.value
+      text: e.target.value,
     }));
-  }
+  };
 
   const values: types.IContextValues = {
     ...state,
@@ -170,7 +191,7 @@ const UserContext = ({ children }: types.IProps) => {
     handleEditUser,
     editUser,
     handleDeleteUser,
-    handelTextChange
+    handelTextChange,
   };
 
   return <userContext.Provider value={values}>{children}</userContext.Provider>;

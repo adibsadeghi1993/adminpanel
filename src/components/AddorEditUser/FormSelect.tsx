@@ -26,9 +26,10 @@ const FormSelect = ({
 }: IProps) => {
   return (
     <Box>
-      <FormControl fullWidth error={!!submitCount && !!errors.position}>
+      <FormControl  fullWidth error={!!submitCount && !!errors.position}>
         <InputLabel>{label}</InputLabel>
-        <Select value={values.position} name={name} onChange={handleChange}>
+        <Select 
+           value={values.position} label={label} name={name} onChange={handleChange}>
           {options.map((item) => (
             <MenuItem key={item.label} value={item.value}>
               {item.label}
@@ -37,6 +38,7 @@ const FormSelect = ({
         </Select>
       {!!submitCount && errors.position && <FormHelperText>{errors.position}</FormHelperText>}
       </FormControl>
+      
     </Box>
   );
 };

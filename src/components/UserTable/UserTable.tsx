@@ -11,6 +11,10 @@ import Paper from "@mui/material/Paper";
 import { Box, Button, TextField } from "@mui/material";
 import { useConsumeContext } from "../../context/UserContext";
 import type * as types from "../../context/types";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import AddIcon from "@mui/icons-material/Add";
+import * as styles from "./styles";
 
 export default function BasicTable() {
   const {
@@ -44,11 +48,16 @@ export default function BasicTable() {
           <Box>
             <TextField
               value={text}
+              size="small"
               label="search"
               onChange={handelTextChange}
             />
           </Box>
-          <Button onClick={handleClickOpen} variant="outlined">
+          <Button
+            startIcon={<AddIcon />}
+            onClick={handleClickOpen}
+            variant="outlined"
+          >
             add new user
           </Button>
         </Box>
@@ -76,15 +85,17 @@ export default function BasicTable() {
                   <TableCell align="right">
                     <Button
                       onClick={() => handleEditUser(u.id)}
-                      sx={{ mr: "10px" }}
                       variant="outlined"
+                      sx={styles.editButton}
+                      startIcon={<EditIcon />}
                     >
                       edit
                     </Button>
                     <Button
                       onClick={() => handleDeleteUser(u.id)}
                       variant="outlined"
-                      color="error"
+                      color="neutral"
+                      startIcon={<DeleteIcon />}
                     >
                       delete
                     </Button>

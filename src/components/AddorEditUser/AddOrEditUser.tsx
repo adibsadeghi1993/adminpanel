@@ -52,7 +52,7 @@ const AddOrEditUser = () => {
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md" >
       <Formik
         initialValues={initilaValues}
         validationSchema={validationSchema}
@@ -60,9 +60,8 @@ const AddOrEditUser = () => {
       >
         {(props) => (
           <Form>
-            <Grid container spacing={4}>
+            <Grid container spacing={4} sx={{paddingTop:"20px"}}>
               <Grid item xs={6}>
-                {" "}
                 <FormikFiled {...props} label="name" name="name" />
               </Grid>
               <Grid item xs={6}>
